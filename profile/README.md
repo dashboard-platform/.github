@@ -21,24 +21,7 @@ For the MVP version of the platform, the focus is on delivering only the essenti
 
 The system is built using a microservice architecture deployed on AWS ECS Fargate, with infrastructure managed via Terraform. The design emphasizes separation of concerns, scalability, and ease of deployment. Below is a high-level architecture diagram.
 
-```plantuml
-@startuml
-actor User
-
-User -> Frontend: HTTP (SvelteJS)
-Frontend -> API Gateway: HTTP
-API Gateway -> Auth Service: /auth/*
-API Gateway -> Dashboard Service: /dashboard/*
-
-Auth Service --> PostgreSQL [Auth DB]
-Dashboard Service --> PostgreSQL [Main DB]
-
-Auth Service --> AWS SES: Email confirmation (optional)
-GitHub Actions --> Terraform: Deploy infrastructure
-GitHub Actions --> ECR: Push Docker images
-
-@enduml
-```
+![Architecture Diagram](docs/architecture.png)
 
 ### Microservices Overview
 
@@ -157,15 +140,7 @@ The JWT is signed using a secret known only to the Auth Service and verified by 
 
 All protected endpoints must pass through a JWT authentication middleware.
 
-```plantuml
-@startuml
-User -> API Gateway: HTTP Request (with Authorization: Bearer <token>)
-API Gateway -> Auth Middleware: Validate JWT
-Auth Middleware --> API Gateway: OK / Unauthorized
-
-API Gateway -> Target Service: Forward request with user_id in headers
-@enduml
-```
+![Architecture Diagram](docs/middleware.png)
 
 Once validated, the middleware extracts the sub (user ID) and injects it into the request headers for downstream services to use (e.g., Dashboard Service).
 
